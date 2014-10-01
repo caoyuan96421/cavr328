@@ -17,7 +17,7 @@ PROGFREQ = 2mhz
 
 CFLAGS  = -DDEBUG_LEVEL=0
 OBJECTS =
-INC = -Iinclude
+INC = -Iinclude -Isrc
 DEF = 
 LIB = -lm
 
