@@ -10,6 +10,11 @@ PROJECT = avr
 DEVICE  = atmega328
 F_CPU   = 16000000L	# in Hz
 
+PROGRAMMER = avrispmk2
+INTERFACE = ISP
+PROGFREQ = 2mhz
+
+
 CFLAGS  = -DDEBUG_LEVEL=0
 OBJECTS =
 INC = -Iinclude
@@ -55,6 +60,11 @@ bin/$(PROJECT).hex: bin/$(PROJECT).elf
 
 bin/$(PROJECT).dump: bin/$(PROJECT).elf
 	$(OBJDUMP) -d bin/$(PROJECT).elf > bin/$(PROJECT).dump
+	
+flash: bin/$(PROJECT).hex
+	atprogram -t $(PROGRAMMER) -i $(INTERFACE) -d $(DEVICE) -cl $(PROGFREQ) \
+		program --verify --format hex --flash -c -f bin/$(PROJECT).hex
+	
 	
 clean:
 	@echo $(OBJECTS)
