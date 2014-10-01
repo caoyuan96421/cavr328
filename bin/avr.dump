@@ -6,31 +6,31 @@ Disassembly of section .text:
 
 00000000 <__vectors>:
    0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
-   4:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-   8:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-   c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  10:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  14:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  18:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  1c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  20:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  24:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  28:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  2c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  30:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  34:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  38:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  3c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  40:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  44:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  48:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  4c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  50:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  54:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  58:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  5c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  60:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  64:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+   4:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+   8:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+   c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  10:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  14:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  18:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  1c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  20:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  24:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  28:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  2c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  30:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  34:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  38:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  3c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  40:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  44:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  48:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  4c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  50:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  54:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  58:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  5c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  60:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  64:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
 
 00000068 <__ctors_end>:
   68:	11 24       	eor	r1, r1
@@ -39,19 +39,175 @@ Disassembly of section .text:
   6e:	d8 e0       	ldi	r29, 0x08	; 8
   70:	de bf       	out	0x3e, r29	; 62
   72:	cd bf       	out	0x3d, r28	; 61
-  74:	0e 94 40 00 	call	0x80	; 0x80 <main>
-  78:	0c 94 43 00 	jmp	0x86	; 0x86 <_exit>
 
-0000007c <__bad_interrupt>:
-  7c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+00000074 <__do_copy_data>:
+  74:	11 e0       	ldi	r17, 0x01	; 1
+  76:	a0 e0       	ldi	r26, 0x00	; 0
+  78:	b1 e0       	ldi	r27, 0x01	; 1
+  7a:	ec ea       	ldi	r30, 0xAC	; 172
+  7c:	f1 e0       	ldi	r31, 0x01	; 1
+  7e:	02 c0       	rjmp	.+4      	; 0x84 <.do_copy_data_start>
 
-00000080 <main>:
-  80:	80 e0       	ldi	r24, 0x00	; 0
-  82:	90 e0       	ldi	r25, 0x00	; 0
-  84:	08 95       	ret
+00000080 <.do_copy_data_loop>:
+  80:	05 90       	lpm	r0, Z+
+  82:	0d 92       	st	X+, r0
 
-00000086 <_exit>:
-  86:	f8 94       	cli
+00000084 <.do_copy_data_start>:
+  84:	a8 31       	cpi	r26, 0x18	; 24
+  86:	b1 07       	cpc	r27, r17
+  88:	d9 f7       	brne	.-10     	; 0x80 <.do_copy_data_loop>
+  8a:	0e 94 a1 00 	call	0x142	; 0x142 <main>
+  8e:	0c 94 d4 00 	jmp	0x1a8	; 0x1a8 <_exit>
 
-00000088 <__stop_program>:
-  88:	ff cf       	rjmp	.-2      	; 0x88 <__stop_program>
+00000092 <__bad_interrupt>:
+  92:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000096 <serialInit>:
+  96:	cf 92       	push	r12
+  98:	df 92       	push	r13
+  9a:	ef 92       	push	r14
+  9c:	ff 92       	push	r15
+  9e:	0f 93       	push	r16
+  a0:	1f 93       	push	r17
+  a2:	6c 01       	movw	r12, r24
+  a4:	7a 01       	movw	r14, r20
+  a6:	8b 01       	movw	r16, r22
+  a8:	60 e4       	ldi	r22, 0x40	; 64
+  aa:	72 e4       	ldi	r23, 0x42	; 66
+  ac:	8f e0       	ldi	r24, 0x0F	; 15
+  ae:	90 e0       	ldi	r25, 0x00	; 0
+  b0:	a8 01       	movw	r20, r16
+  b2:	97 01       	movw	r18, r14
+  b4:	0e 94 b2 00 	call	0x164	; 0x164 <__udivmodsi4>
+  b8:	21 50       	subi	r18, 0x01	; 1
+  ba:	30 40       	sbci	r19, 0x00	; 0
+  bc:	40 40       	sbci	r20, 0x00	; 0
+  be:	50 40       	sbci	r21, 0x00	; 0
+  c0:	e0 ec       	ldi	r30, 0xC0	; 192
+  c2:	f0 e0       	ldi	r31, 0x00	; 0
+  c4:	24 83       	std	Z+4, r18	; 0x04
+  c6:	23 2f       	mov	r18, r19
+  c8:	34 2f       	mov	r19, r20
+  ca:	45 2f       	mov	r20, r21
+  cc:	55 27       	eor	r21, r21
+  ce:	25 83       	std	Z+5, r18	; 0x05
+  d0:	f6 01       	movw	r30, r12
+  d2:	e4 82       	std	Z+4, r14	; 0x04
+  d4:	f5 82       	std	Z+5, r15	; 0x05
+  d6:	06 83       	std	Z+6, r16	; 0x06
+  d8:	17 83       	std	Z+7, r17	; 0x07
+  da:	1f 91       	pop	r17
+  dc:	0f 91       	pop	r16
+  de:	ff 90       	pop	r15
+  e0:	ef 90       	pop	r14
+  e2:	df 90       	pop	r13
+  e4:	cf 90       	pop	r12
+  e6:	08 95       	ret
+
+000000e8 <serialWriteBlock>:
+  e8:	80 91 c1 00 	lds	r24, 0x00C1
+  ec:	88 60       	ori	r24, 0x08	; 8
+  ee:	e0 ec       	ldi	r30, 0xC0	; 192
+  f0:	f0 e0       	ldi	r31, 0x00	; 0
+  f2:	81 83       	std	Z+1, r24	; 0x01
+  f4:	80 91 c0 00 	lds	r24, 0x00C0
+  f8:	80 64       	ori	r24, 0x40	; 64
+  fa:	80 93 c0 00 	sts	0x00C0, r24
+  fe:	20 e0       	ldi	r18, 0x00	; 0
+ 100:	30 e0       	ldi	r19, 0x00	; 0
+ 102:	a0 ec       	ldi	r26, 0xC0	; 192
+ 104:	b0 e0       	ldi	r27, 0x00	; 0
+ 106:	0d c0       	rjmp	.+26     	; 0x122 <serialWriteBlock+0x3a>
+ 108:	fa 01       	movw	r30, r20
+ 10a:	e2 0f       	add	r30, r18
+ 10c:	f3 1f       	adc	r31, r19
+ 10e:	80 81       	ld	r24, Z
+ 110:	16 96       	adiw	r26, 0x06	; 6
+ 112:	8c 93       	st	X, r24
+ 114:	16 97       	sbiw	r26, 0x06	; 6
+ 116:	80 91 c0 00 	lds	r24, 0x00C0
+ 11a:	85 ff       	sbrs	r24, 5
+ 11c:	fc cf       	rjmp	.-8      	; 0x116 <serialWriteBlock+0x2e>
+ 11e:	2f 5f       	subi	r18, 0xFF	; 255
+ 120:	3f 4f       	sbci	r19, 0xFF	; 255
+ 122:	26 17       	cp	r18, r22
+ 124:	37 07       	cpc	r19, r23
+ 126:	80 f3       	brcs	.-32     	; 0x108 <serialWriteBlock+0x20>
+ 128:	80 91 c0 00 	lds	r24, 0x00C0
+ 12c:	86 ff       	sbrs	r24, 6
+ 12e:	fc cf       	rjmp	.-8      	; 0x128 <serialWriteBlock+0x40>
+ 130:	80 91 c1 00 	lds	r24, 0x00C1
+ 134:	87 7f       	andi	r24, 0xF7	; 247
+ 136:	e0 ec       	ldi	r30, 0xC0	; 192
+ 138:	f0 e0       	ldi	r31, 0x00	; 0
+ 13a:	81 83       	std	Z+1, r24	; 0x01
+ 13c:	08 95       	ret
+
+0000013e <put>:
+ 13e:	08 95       	ret
+
+00000140 <reg>:
+ 140:	08 95       	ret
+
+00000142 <main>:
+ 142:	80 e0       	ldi	r24, 0x00	; 0
+ 144:	91 e0       	ldi	r25, 0x01	; 1
+ 146:	40 e8       	ldi	r20, 0x80	; 128
+ 148:	55 e2       	ldi	r21, 0x25	; 37
+ 14a:	60 e0       	ldi	r22, 0x00	; 0
+ 14c:	70 e0       	ldi	r23, 0x00	; 0
+ 14e:	0e 94 4b 00 	call	0x96	; 0x96 <serialInit>
+ 152:	80 e0       	ldi	r24, 0x00	; 0
+ 154:	91 e0       	ldi	r25, 0x01	; 1
+ 156:	6f e0       	ldi	r22, 0x0F	; 15
+ 158:	70 e0       	ldi	r23, 0x00	; 0
+ 15a:	48 e0       	ldi	r20, 0x08	; 8
+ 15c:	51 e0       	ldi	r21, 0x01	; 1
+ 15e:	0e 94 74 00 	call	0xe8	; 0xe8 <serialWriteBlock>
+ 162:	f7 cf       	rjmp	.-18     	; 0x152 <main+0x10>
+
+00000164 <__udivmodsi4>:
+ 164:	a1 e2       	ldi	r26, 0x21	; 33
+ 166:	1a 2e       	mov	r1, r26
+ 168:	aa 1b       	sub	r26, r26
+ 16a:	bb 1b       	sub	r27, r27
+ 16c:	fd 01       	movw	r30, r26
+ 16e:	0d c0       	rjmp	.+26     	; 0x18a <__udivmodsi4_ep>
+
+00000170 <__udivmodsi4_loop>:
+ 170:	aa 1f       	adc	r26, r26
+ 172:	bb 1f       	adc	r27, r27
+ 174:	ee 1f       	adc	r30, r30
+ 176:	ff 1f       	adc	r31, r31
+ 178:	a2 17       	cp	r26, r18
+ 17a:	b3 07       	cpc	r27, r19
+ 17c:	e4 07       	cpc	r30, r20
+ 17e:	f5 07       	cpc	r31, r21
+ 180:	20 f0       	brcs	.+8      	; 0x18a <__udivmodsi4_ep>
+ 182:	a2 1b       	sub	r26, r18
+ 184:	b3 0b       	sbc	r27, r19
+ 186:	e4 0b       	sbc	r30, r20
+ 188:	f5 0b       	sbc	r31, r21
+
+0000018a <__udivmodsi4_ep>:
+ 18a:	66 1f       	adc	r22, r22
+ 18c:	77 1f       	adc	r23, r23
+ 18e:	88 1f       	adc	r24, r24
+ 190:	99 1f       	adc	r25, r25
+ 192:	1a 94       	dec	r1
+ 194:	69 f7       	brne	.-38     	; 0x170 <__udivmodsi4_loop>
+ 196:	60 95       	com	r22
+ 198:	70 95       	com	r23
+ 19a:	80 95       	com	r24
+ 19c:	90 95       	com	r25
+ 19e:	9b 01       	movw	r18, r22
+ 1a0:	ac 01       	movw	r20, r24
+ 1a2:	bd 01       	movw	r22, r26
+ 1a4:	cf 01       	movw	r24, r30
+ 1a6:	08 95       	ret
+
+000001a8 <_exit>:
+ 1a8:	f8 94       	cli
+
+000001aa <__stop_program>:
+ 1aa:	ff cf       	rjmp	.-2      	; 0x1aa <__stop_program>
