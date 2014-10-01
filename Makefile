@@ -18,6 +18,7 @@ OBJECTS =
 INC = -Iinclude -Isrc -Iusbdrv
 DEF = 
 LIB = -lm
+LINKFLAG = -Wl,-Map,bin/$(PROJECT).map
 
 
 # Include source files in other directories
@@ -49,7 +50,7 @@ all: bin/$(PROJECT).elf bin/$(PROJECT).hex bin/$(PROJECT).dump
 
 bin/$(PROJECT).elf: $(OBJECTS)
 	@echo Compile for .elf file
-	$(COMPILE) $(LIB) -Wl,-Map,bin/$(PROJECT).map -o bin/$(PROJECT).elf $(OBJECTS)
+	$(COMPILE) $(LIB) $(LINKFLAG) -o bin/$(PROJECT).elf $(OBJECTS)
 
 bin/$(PROJECT).hex: bin/$(PROJECT).elf
 	rm -f bin/$(PROJECT).hex
@@ -63,7 +64,10 @@ flash: bin/$(PROJECT).hex
 	atprogram -t $(PROGRAMMER) -i $(INTERFACE) -d $(DEVICE) -cl $(PROGFREQ) \
 		program --verify --format hex --flash -c -f bin/$(PROJECT).hex
 	
-	
+bootloader: LINKFLAG += -Wl,--section-start,.text=0x3800
+bootloader: DEF += -DBOOTLOADER
+bootloader: bin/$(PROJECT).hex bin/$(PROJECT).dump
+		
 clean:
 	@echo $(OBJECTS)
 	rm -fR $(OBJECTS)
