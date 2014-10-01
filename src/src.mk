@@ -1,0 +1,2 @@
+
+OBJECTS += src/main.o
