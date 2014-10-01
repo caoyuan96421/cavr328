@@ -1,10 +1,8 @@
 # Name: Makefile
-# Project: hid-mouse example
-# Author: Christian Starkjohann
-# Creation Date: 2008-04-07
+# Project: hid-m
+# Author: Yuan Cao
+# Creation Date: 2014-09-30
 # Tabsize: 4
-# Copyright: (c) 2008 by OBJECTIVE DEVELOPMENT Software GmbH
-# License: GNU GPL v2 (see License.txt), GNU GPL v3 or proprietary (CommercialLicense.txt)
 
 PROJECT = avr
 DEVICE  = atmega328
@@ -17,13 +15,13 @@ PROGFREQ = 2mhz
 
 CFLAGS  = -DDEBUG_LEVEL=0
 OBJECTS =
-INC = -Iinclude -Isrc
+INC = -Iinclude -Isrc -Iusbdrv
 DEF = 
 LIB = -lm
 
 
 # Include source files in other directories
-include avr/avr.mk src/src.mk 
+include avr/avr.mk src/src.mk usbdrv/usbdrv.mk
 
 TOOLCHAIN = avr
 GCC = $(TOOLCHAIN)-gcc
