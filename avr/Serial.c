@@ -61,7 +61,7 @@ ISR(USART_UDRE_vect){
 		SERIAL0->UDR = fifoPop(&Serial0.tx_buffer);
 	}
 	else{
-		SERIAL0->UDR &= ~(1<<TXEN0) | (1<<UDRIE0);
+		SERIAL0->UCSRB &= ~((1<<TXEN0) | (1<<UDRIE0));
 	}
 }
 

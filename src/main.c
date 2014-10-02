@@ -20,18 +20,19 @@ FUSEMEM __fuse_t fusedata = {
 
 int main(){
 #ifdef BOOTLOADER
+	MCUCR |= (1<<IVCE);	/*Move vector table to the Bootloader region.*/
 	MCUCR |= (1<<IVSEL);	/*Move vector table to the Bootloader region.*/
 #endif
 	serialInit(&Serial0, 9600);
-	usbInit();
-	usbDeviceDisconnect();
-	_delay_ms(100);
-	usbDeviceConnect();
+	//usbInit();
+	//usbDeviceDisconnect();
+	//_delay_ms(100);
+	//usbDeviceConnect();
 	sei();
 	while(1){
 		//serialWriteBlocking(&Serial0, sizeof(str), str);
 		serialWrite(&Serial0, sizeof(str), str);
-		updateUSB();
+		//updateUSB();
 		_delay_ms(100);
 	}
 	return 0;
