@@ -51,11 +51,14 @@ all: $(OUTPUT)/$(PROJECT).elf $(OUTPUT)/$(PROJECT).hex $(OUTPUT)/$(PROJECT).dump
 
 .SECONDARY : $(OUTPUT)/$(PROJECT).elf $(OBJECTS_ABS)
 # Generic rule for compiling C files:
-bin/%.o: %.c
+$(OUTPUT)/%.o: %.c
+ifeq ("$(wildcard,$(@D))","")
+	-mkdir $(@D)
+endif
 	cd $(OUTPUT) && $(COMPILE) -c ../$< -o ../$@ 
 
 # Generic rule for assembling Assembler source files:
-bin/%.o: %.S
+$(OUTPUT)/%.o: %.S
 	cd $(OUTPUT) && $(COMPILE) -x assembler-with-cpp -c ../$< -o ../$@ 
 # "-x assembler-with-cpp" should not be necessary since this is the default
 # file type for the .S (with capital S) extension. However, upper case
@@ -78,7 +81,7 @@ flash: $(OUTPUT)/$(PROJECT).elf
 	atprogram -t $(PROGRAMMER) -i $(INTERFACE) -d $(DEVICE) -cl $(PROGFREQ) \
 		program --verify --format elf --flash -c $(PROGFUSE) -f $(OUTPUT)/$(PROJECT).elf
 	
-bootloader: LINKFLAG += -Wl,--section-start,.text=0x3800
+bootloader: LINKFLAG += -Wl,--section-start,.text=0x7000
 # 0x7000 = 0x3800 (words), start of bootloader region
 bootloader: DEF += -DBOOTLOADER
 bootloader: $(OUTPUT)/$(PROJECT).elf $(OUTPUT)/$(PROJECT).hex $(OUTPUT)/$(PROJECT).dump
