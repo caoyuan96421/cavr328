@@ -11,6 +11,15 @@ F_CPU   = 16000000L	# in Hz
 PROGRAMMER = avrispmk2
 INTERFACE = ISP
 PROGFREQ = 2mhz
+PROG_FUSE = 1
+
+ifeq ($(PROG_FUSE),1)
+	COPYFUSE = -j .fuse
+	PROGFUSE = -fs
+else
+	COPYFUSE = 
+	PROGFUSE = 
+endif
 
 
 CFLAGS  = -DDEBUG_LEVEL=0
@@ -54,17 +63,18 @@ bin/$(PROJECT).elf: $(OBJECTS)
 
 bin/$(PROJECT).hex: bin/$(PROJECT).elf
 	rm -f bin/$(PROJECT).hex
-	$(OBJCOPY) -j .text -j .data -O ihex bin/$(PROJECT).elf bin/$(PROJECT).hex
+	$(OBJCOPY) -j .text -j .data $(COPYFUSE) -O ihex bin/$(PROJECT).elf bin/$(PROJECT).hex
 	$(SIZE) bin/$(PROJECT).hex
 
 bin/$(PROJECT).dump: bin/$(PROJECT).elf
 	$(OBJDUMP) -d bin/$(PROJECT).elf > bin/$(PROJECT).dump
 	
-flash: bin/$(PROJECT).hex
+flash: bin/$(PROJECT).elf
 	atprogram -t $(PROGRAMMER) -i $(INTERFACE) -d $(DEVICE) -cl $(PROGFREQ) \
-		program --verify --format hex --flash -c -f bin/$(PROJECT).hex
+		program --verify --format elf --flash -c $(PROGFUSE) -f bin/$(PROJECT).elf
 	
-bootloader: LINKFLAG += -Wl,--section-start,.text=0x3800
+bootloader: LINKFLAG += -Wl,--section-start,.text=0x7000
+# 0x7000 = 0x3800 (words), start of bootloader region
 bootloader: DEF += -DBOOTLOADER
 bootloader: bin/$(PROJECT).hex bin/$(PROJECT).dump
 		
