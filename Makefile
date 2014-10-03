@@ -1,75 +1,104 @@
 # Name: Makefile
-# Project: hid-mouse example
-# Author: Christian Starkjohann
-# Creation Date: 2008-04-07
+# Project: hid-m
+# Author: Yuan Cao
+# Creation Date: 2014-09-30
 # Tabsize: 4
-# Copyright: (c) 2008 by OBJECTIVE DEVELOPMENT Software GmbH
-# License: GNU GPL v2 (see License.txt), GNU GPL v3 or proprietary (CommercialLicense.txt)
 
+
+.SECONDEXPANSION:
 PROJECT = avr
+OUTPUT = bin
 DEVICE  = atmega328
-F_CPU   = 16000000L	# in Hz
+F_CPU   = 16000000L
+OBJECT_$(PROJECT) = OBJECTS
+
+OBJECT_avr-bootloader = OBJ-BOOTLOADER
 
 PROGRAMMER = avrispmk2
 INTERFACE = ISP
+<<<<<<< HEAD
 PROGFREQ = 1mhz
+=======
+PROGFREQ = 2mhz
+PROG_FUSE = 1
+
+ifeq ($(PROG_FUSE),1)
+	COPYFUSE = -j .fuse
+	PROGFUSE = -fs
+else
+	COPYFUSE = 
+	PROGFUSE = 
+endif
+>>>>>>> origin/bootloader
 
 
-CFLAGS  = -DDEBUG_LEVEL=0
-OBJECTS =
-INC = -Iinclude -Isrc
+CFLAGS  = -DDEBUG 
+INC = -I../usbdrv
 DEF = 
-LIB = -lm
+LIB = -Wl,-lm
+LDFLAGS = -Wl,-Map,$(basename $@).map -Wl,--gc-sections
+GCC_OPTS = -Wall -Os -g2
 
 
 # Include source files in other directories
-include avr/avr.mk src/src.mk 
+include avr/avr.mk src/src.mk usbdrv/usbdrv.mk bootloader/bootloader.mk
+
 
 TOOLCHAIN = avr
-GCC = $(TOOLCHAIN)-gcc
+CC = $(TOOLCHAIN)-gcc
 OBJCOPY = $(TOOLCHAIN)-objcopy
 OBJDUMP = $(TOOLCHAIN)-objdump
 SIZE = $(TOOLCHAIN)-size
-GCC_OPTS = -Wall -Os
-COMPILE = $(GCC) $(GCC_OPTS) -DF_CPU=$(F_CPU) $(DEF) $(INC) $(CFLAGS) -mmcu=$(DEVICE)
+
+COMPILE = $(CC) $(GCC_OPTS) -DF_CPU=$(F_CPU) $(DEF) $(INC) $(CFLAGS) -mmcu=$(DEVICE)  
+LD = $(CC) -mmcu=$(DEVICE) $(LIB) $(LDFLAGS)
+
+.SECONDARY : $(OUTPUT)/$(PROJECT).elf $(OBJECTS:%.o=$(OUTPUT)/%.o)
 
 # Default rule
-all: bin/$(PROJECT).elf bin/$(PROJECT).hex bin/$(PROJECT).dump
+all: INC += -I../src -I../include 
+all: $(OUTPUT)/$(PROJECT).elf $(OUTPUT)/$(PROJECT).hex $(OUTPUT)/$(PROJECT).dump
 	@echo Done.
 
+bootloader: LDFLAGS += -Wl,--section-start,.text=0x7000
+bootloader: INC += -I../bootloader
+bootloader: $(OUTPUT)/$(PROJECT)-bootloader.elf $(OUTPUT)/$(PROJECT)-bootloader.hex $(OUTPUT)/$(PROJECT)-bootloader.dump
+	
 # Generic rule for compiling C files:
-.c.o:
-	$(COMPILE) -c $< -o $@
+$(OUTPUT)/%.o: %.c
+	@-mkdir $(@D)
+	cd $(OUTPUT) && $(COMPILE) -c ../$< -o ../$@ 
 
 # Generic rule for assembling Assembler source files:
-.S.o:
-	$(COMPILE) -x assembler-with-cpp -c $< -o $@
+$(OUTPUT)/%.o: %.S
+	@-mkdir $(@D)
+	cd $(OUTPUT) && $(COMPILE) -x assembler-with-cpp -c ../$< -o ../$@ 
 # "-x assembler-with-cpp" should not be necessary since this is the default
 # file type for the .S (with capital S) extension. However, upper case
 # characters are not always preserved on Windows. To ensure WinAVR
 # compatibility define the file type manually.
 
-bin/$(PROJECT).elf: $(OBJECTS)
-	@echo Compile for .elf file
-	$(COMPILE) $(LIB) -Wl,-Map,bin/$(PROJECT).map -o bin/$(PROJECT).elf $(OBJECTS)
+%.elf: $$(addprefix $(OUTPUT)/,$$($$(OBJECT_$$(basename $$(notdir $$@)))))
+	@echo Compile for $*.elf file, objects $^
+	$(LD) -o $@ $^
 
-bin/$(PROJECT).hex: bin/$(PROJECT).elf
-	rm -f bin/$(PROJECT).hex
-	$(OBJCOPY) -j .text -j .data -O ihex bin/$(PROJECT).elf bin/$(PROJECT).hex
-	$(SIZE) bin/$(PROJECT).hex
+%.hex: %.elf
+	rm -f $@
+	$(OBJCOPY) -j .text -j .data $(COPYFUSE) -O ihex $< $@
+	$(SIZE) $@
 
-bin/$(PROJECT).dump: bin/$(PROJECT).elf
-	$(OBJDUMP) -d bin/$(PROJECT).elf > bin/$(PROJECT).dump
+%.dump: %.elf
+	$(OBJDUMP) -h -S $< > $@
 	
-flash: bin/$(PROJECT).hex
+flash: all $(OUTPUT)/$(PROJECT).elf
 	atprogram -t $(PROGRAMMER) -i $(INTERFACE) -d $(DEVICE) -cl $(PROGFREQ) \
-		program --verify --format hex --flash -c -f bin/$(PROJECT).hex
-	
-	
-clean:
-	@echo $(OBJECTS)
-	rm -fR $(OBJECTS)
-	rm -fR bin/*.hex
-	rm -fR bin/*.elf
-	rm -fR bin/*.dump
-	rm -fR bin/*.map
+		program --verify --format elf --flash -c $(PROGFUSE) -f $(OUTPUT)/$(PROJECT).elf
+		
+flash-bootloader: bootloader $(OUTPUT)/$(PROJECT)-bootloader.elf
+	atprogram -t $(PROGRAMMER) -i $(INTERFACE) -d $(DEVICE) -cl $(PROGFREQ) \
+		program --verify --format elf --flash -c $(PROGFUSE) -f $(OUTPUT)/$(PROJECT)-bootloader.elf
+
+		
+.PHONY clean:
+	cd $(OUTPUT) && rm -f $(OBJECTS) $(OBJECTS:%.o=%.d)
+	rm -f $(OUTPUT)/*.*

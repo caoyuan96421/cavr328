@@ -1,0 +1,5 @@
+
+BOOTLOADER = bootloader
+
+OBJ-BOOTLOADER += $(BOOTLOADER)/bootloader.o
+OBJ-BOOTLOADER += $(BOOTLOADER)/usb.o
