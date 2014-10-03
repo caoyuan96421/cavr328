@@ -63,12 +63,12 @@ bootloader: $(OUTPUT)/$(PROJECT)-bootloader.elf $(OUTPUT)/$(PROJECT)-bootloader.
 	
 # Generic rule for compiling C files:
 $(OUTPUT)/%.o: %.c
-	@-mkdir $(@D)
+	@-mkdir -p $(@D)
 	cd $(OUTPUT) && $(COMPILE) -c ../$< -o ../$@ 
 
 # Generic rule for assembling Assembler source files:
 $(OUTPUT)/%.o: %.S
-	@-mkdir $(@D)
+	@-mkdir -p $(@D)
 	cd $(OUTPUT) && $(COMPILE) -x assembler-with-cpp -c ../$< -o ../$@ 
 # "-x assembler-with-cpp" should not be necessary since this is the default
 # file type for the .S (with capital S) extension. However, upper case
@@ -97,5 +97,4 @@ flash-bootloader: bootloader $(OUTPUT)/$(PROJECT)-bootloader.elf
 
 		
 .PHONY clean:
-	cd $(OUTPUT) && rm -f $(OBJECTS) $(OBJECTS:%.o=%.d)
-	rm -f $(OUTPUT)/*.*
+	rm -fR $(OUTPUT)
