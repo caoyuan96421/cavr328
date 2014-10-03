@@ -8,8 +8,8 @@
 
 void serialInit(Serial *pser, uint32_t baud){
 	uint32_t divide = (((uint32_t)F_CPU) >> 4) / baud - 1;
-	SERIAL0->UBBRL = divide & 0xFF;
-	SERIAL0->UBBRH = divide >> 8;
+	SERIAL0->UBRRL = divide & 0xFF;
+	SERIAL0->UBRRH = divide >> 8;
 	//SERIAL0->UCSR0B = (1<<RXCIE0) | (1<<RXEN0);	/*Only enable RX*/
 	pser->baud = baud;
 #ifdef MCUCONF_USE_SERIAL_ASYNC

@@ -4,10 +4,15 @@
 # Creation Date: 2014-09-30
 # Tabsize: 4
 
+
+.SECONDEXPANSION:
 PROJECT = avr
 OUTPUT = bin
 DEVICE  = atmega328
-F_CPU   = 16000000L	# in Hz
+F_CPU   = 16000000L
+OBJECT_$(PROJECT) = OBJECTS
+
+OBJECT_avr-bootloader = OBJ-BOOTLOADER
 
 PROGRAMMER = avrispmk2
 INTERFACE = ISP
@@ -24,18 +29,17 @@ endif
 
 
 CFLAGS  = -DDEBUG 
-OBJECTS =
-INC = -I../include -I../src -I../usbdrv
+INC = -I../usbdrv
 DEF = 
 LIB = -Wl,-lm
-LINKFLAG = -Wl,-Map,$(OUTPUT)/$(PROJECT).map -Wl,--gc-sections
+LDFLAGS = -Wl,-Map,$(basename $@).map -Wl,--gc-sections
 GCC_OPTS = -Wall -Os -g2
 
 
 # Include source files in other directories
-include avr/avr.mk src/src.mk usbdrv/usbdrv.mk
+include avr/avr.mk src/src.mk usbdrv/usbdrv.mk bootloader/bootloader.mk
 
-OBJECTS_ABS := $(OBJECTS:%.o=bin/%.o)
+
 TOOLCHAIN = avr
 CC = $(TOOLCHAIN)-gcc
 OBJCOPY = $(TOOLCHAIN)-objcopy
@@ -43,31 +47,36 @@ OBJDUMP = $(TOOLCHAIN)-objdump
 SIZE = $(TOOLCHAIN)-size
 
 COMPILE = $(CC) $(GCC_OPTS) -DF_CPU=$(F_CPU) $(DEF) $(INC) $(CFLAGS) -mmcu=$(DEVICE)  
-LINK = $(CC) -mmcu=$(DEVICE) $(LIB) $(LINKFLAG)
+LD = $(CC) -mmcu=$(DEVICE) $(LIB) $(LDFLAGS)
+
+.SECONDARY : $(OUTPUT)/$(PROJECT).elf $(OBJECTS:%.o=$(OUTPUT)/%.o)
 
 # Default rule
+all: INC += -I../src -I../include 
 all: $(OUTPUT)/$(PROJECT).elf $(OUTPUT)/$(PROJECT).hex $(OUTPUT)/$(PROJECT).dump
 	@echo Done.
 
-.SECONDARY : $(OUTPUT)/$(PROJECT).elf $(OBJECTS_ABS)
+bootloader: LDFLAGS += -Wl,--section-start,.text=0x7000
+bootloader: INC += -I../bootloader
+bootloader: $(OUTPUT)/$(PROJECT)-bootloader.elf $(OUTPUT)/$(PROJECT)-bootloader.hex $(OUTPUT)/$(PROJECT)-bootloader.dump
+	
 # Generic rule for compiling C files:
 $(OUTPUT)/%.o: %.c
-ifeq ("$(wildcard,$(@D))","")
-	-mkdir $(@D)
-endif
+	@-mkdir $(@D)
 	cd $(OUTPUT) && $(COMPILE) -c ../$< -o ../$@ 
 
 # Generic rule for assembling Assembler source files:
 $(OUTPUT)/%.o: %.S
+	@-mkdir $(@D)
 	cd $(OUTPUT) && $(COMPILE) -x assembler-with-cpp -c ../$< -o ../$@ 
 # "-x assembler-with-cpp" should not be necessary since this is the default
 # file type for the .S (with capital S) extension. However, upper case
 # characters are not always preserved on Windows. To ensure WinAVR
 # compatibility define the file type manually.
 
-%.elf: $(OBJECTS_ABS)
-	@echo Compile for .elf file
-	$(LINK) -o $@ $(OBJECTS_ABS) 
+%.elf: $$(addprefix $(OUTPUT)/,$$($$(OBJECT_$$(basename $$(notdir $$@)))))
+	@echo Compile for $*.elf file, objects $^
+	$(LD) -o $@ $^
 
 %.hex: %.elf
 	rm -f $@
@@ -77,18 +86,15 @@ $(OUTPUT)/%.o: %.S
 %.dump: %.elf
 	$(OBJDUMP) -h -S $< > $@
 	
-flash: $(OUTPUT)/$(PROJECT).elf
+flash: all $(OUTPUT)/$(PROJECT).elf
 	atprogram -t $(PROGRAMMER) -i $(INTERFACE) -d $(DEVICE) -cl $(PROGFREQ) \
 		program --verify --format elf --flash -c $(PROGFUSE) -f $(OUTPUT)/$(PROJECT).elf
-	
-bootloader: LINKFLAG += -Wl,--section-start,.text=0x7000
-# 0x7000 = 0x3800 (words), start of bootloader region
-bootloader: DEF += -DBOOTLOADER
-bootloader: $(OUTPUT)/$(PROJECT).elf $(OUTPUT)/$(PROJECT).hex $(OUTPUT)/$(PROJECT).dump
+		
+flash-bootloader: bootloader $(OUTPUT)/$(PROJECT)-bootloader.elf
+	atprogram -t $(PROGRAMMER) -i $(INTERFACE) -d $(DEVICE) -cl $(PROGFREQ) \
+		program --verify --format elf --flash -c $(PROGFUSE) -f $(OUTPUT)/$(PROJECT)-bootloader.elf
+
 		
 .PHONY clean:
 	cd $(OUTPUT) && rm -f $(OBJECTS) $(OBJECTS:%.o=%.d)
-	rm -f $(OUTPUT)/*.hex
-	rm -f $(OUTPUT)/*.elf
-	rm -f $(OUTPUT)/*.dump
-	rm -f $(OUTPUT)/*.map
+	rm -f $(OUTPUT)/*.*

@@ -12,8 +12,8 @@ typedef struct {
 	volatile uint8_t UCSRB;
 	volatile uint8_t UCSRC;
 	volatile uint8_t reserved1;
-	volatile uint8_t UBBRL;
-	volatile uint8_t UBBRH;
+	volatile uint8_t UBRRL;
+	volatile uint8_t UBRRH;
 	volatile uint8_t UDR;
 } USART_struct;
 
