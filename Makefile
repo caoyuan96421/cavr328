@@ -16,9 +16,7 @@ OBJECT_avr-bootloader = OBJ-BOOTLOADER
 
 PROGRAMMER = avrispmk2
 INTERFACE = ISP
-<<<<<<< HEAD
 PROGFREQ = 1mhz
-=======
 PROGFREQ = 2mhz
 PROG_FUSE = 1
 
@@ -29,7 +27,6 @@ else
 	COPYFUSE = 
 	PROGFUSE = 
 endif
->>>>>>> origin/bootloader
 
 
 CFLAGS  = -DDEBUG 

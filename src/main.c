@@ -10,20 +10,12 @@ extern void updateUSB();
 
 FUSEMEM __fuse_t fusedata = {
 	0xFF,
-#ifdef BOOTLOADER
 	0xD8,		// BOOTRST = 0 (enabled)
-#else
-	0xD9,		// BOOTRST = 1 (disabled)
-#endif
 	0xFF
 };
 
 
 int main(){
-#ifdef BOOTLOADER
-	MCUCR = (1<<IVCE);	/*Move vector table to the Bootloader region.*/
-	MCUCR = (1<<IVSEL);	/*Move vector table to the Bootloader region.*/
-#endif
 	serialInit(&Serial0, 9600);
 	usbInit();
 	usbDeviceDisconnect();
@@ -33,9 +25,6 @@ int main(){
 	//uint16_t length = sprintf(str,"MCUCR=%02x\r\n",MCUCR);
 	//serialWriteBlocking(&Serial0, length, str);
 	serialWriteBlocking(&Serial0, 7, "Init\r\n");
-#ifdef BOOTLOADER
-	serialWriteBlocking(&Serial0, 7, "Bootloader\r\n");
-#endif
 	uint16_t counter = 0;
 	while(1){
 		//uint16_t length = sprintf(str,"%d\r\n",counter++);
