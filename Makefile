@@ -21,10 +21,8 @@ PROGFREQ = 2mhz
 PROG_FUSE = 1
 
 ifeq ($(PROG_FUSE),1)
-	COPYFUSE = -j .fuse
 	PROGFUSE = -fs
 else
-	COPYFUSE = 
 	PROGFUSE = 
 endif
 
@@ -34,7 +32,7 @@ INC = -I../usbdrv
 DEF = 
 LIB = -Wl,-lm
 LDFLAGS = -Wl,-Map,$(basename $@).map -Wl,--gc-sections
-GCC_OPTS = -Wall -Os -g2
+GCC_OPTS = -Wall -Os
 
 
 # Include source files in other directories
@@ -54,21 +52,23 @@ LD = $(CC) -mmcu=$(DEVICE) $(LIB) $(LDFLAGS)
 
 # Default rule
 all: INC += -I../src -I../include 
-all: $(OUTPUT)/$(PROJECT).elf $(OUTPUT)/$(PROJECT).hex $(OUTPUT)/$(PROJECT).dump
+all: $(OUTPUT)/$(PROJECT).elf $(OUTPUT)/$(PROJECT).hex $(OUTPUT)/$(PROJECT).dump $(addprefix $(OUTPUT)/,$(OBJECTS))
 	@echo Done.
 
 bootloader: LDFLAGS += -Wl,--section-start,.text=0x7000
 bootloader: INC += -I../bootloader
-bootloader: $(OUTPUT)/$(PROJECT)-bootloader.elf $(OUTPUT)/$(PROJECT)-bootloader.hex $(OUTPUT)/$(PROJECT)-bootloader.dump
+bootloader: $(OUTPUT)/$(PROJECT)-bootloader.elf $(OUTPUT)/$(PROJECT)-bootloader.hex $(OUTPUT)/$(PROJECT)-bootloader.dump $(addprefix $(OUTPUT)/,$(OBJ-BOOTLOADER))
 	
 # Generic rule for compiling C files:
 $(OUTPUT)/%.o: %.c
-	@-mkdir -p $(@D)
+	mkdir -p $(@D)
+	@cd $(OUTPUT) && $(COMPILE) -c ../$< -M -MF ../$(@:%.o=%.d) 
 	cd $(OUTPUT) && $(COMPILE) -c ../$< -o ../$@ 
 
 # Generic rule for assembling Assembler source files:
 $(OUTPUT)/%.o: %.S
-	@-mkdir -p $(@D)
+	mkdir -p $(@D)
+	@cd $(OUTPUT) && $(COMPILE) -x assembler-with-cpp -c ../$< -M -MF ../$(@:%.o=%.d) 
 	cd $(OUTPUT) && $(COMPILE) -x assembler-with-cpp -c ../$< -o ../$@ 
 # "-x assembler-with-cpp" should not be necessary since this is the default
 # file type for the .S (with capital S) extension. However, upper case
@@ -81,7 +81,7 @@ $(OUTPUT)/%.o: %.S
 
 %.hex: %.elf
 	rm -f $@
-	$(OBJCOPY) -j .text -j .data $(COPYFUSE) -O ihex $< $@
+	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 	$(SIZE) $@
 
 %.dump: %.elf
