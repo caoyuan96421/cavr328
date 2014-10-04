@@ -3,3 +3,4 @@ BOOTLOADER = bootloader
 
 OBJ-BOOTLOADER += $(BOOTLOADER)/bootloader.o
 OBJ-BOOTLOADER += $(BOOTLOADER)/usb.o
+OBJ-BOOTLOADER += $(BOOTLOADER)/isp_self.o

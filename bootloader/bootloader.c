@@ -6,7 +6,6 @@
 
 #define BAUD 9600
 #define DIVIDE ((((uint32_t)F_CPU) >> 4) / BAUD - 1)
-extern void updateUSB();
 
 
 FUSEMEM __fuse_t fusedata = {
@@ -20,7 +19,7 @@ void usart0_init(){
 	UBRR0L = DIVIDE >> 8;
 }
 
-void usart0_write(char *s){
+void usart0_write(const char *s){
 	UCSR0B |= (1<<TXEN0);
 	UCSR0A |= (1<<TXC0);
 	for(;*s;s++){
@@ -45,9 +44,7 @@ int main(){
 	sei();
 	
 	while(1){
-		usart0_write(__DATE__""__TIME__"\r\n");
-		updateUSB();
-		_delay_ms(20);
+		usbPoll();
 	}
 	
 	return 0;

@@ -16,6 +16,12 @@ FUSEMEM __fuse_t fusedata = {
 
 
 int main(){
+<<<<<<< HEAD
+=======
+#ifdef BOOTLOADER
+	MCUCR |= (1<<IVSEL);	/*Move vector table to the Bootloader region.*/
+#endif
+>>>>>>> parent of 906c14e... Bootloader working
 	serialInit(&Serial0, 9600);
 	usbInit();
 	usbDeviceDisconnect();
@@ -27,11 +33,18 @@ int main(){
 	serialWriteBlocking(&Serial0, 7, "Init\r\n");
 	uint16_t counter = 0;
 	while(1){
+<<<<<<< HEAD
 		//uint16_t length = sprintf(str,"%d\r\n",counter++);
 		serialWrite(&Serial0, strlen(str), str);
 		//serialWrite(&Serial0, length, str);
 		updateUSB();
 		_delay_ms(20);
+=======
+		//serialWriteBlocking(&Serial0, sizeof(str), str);
+		serialWrite(&Serial0, sizeof(str), str);
+		updateUSB();
+		_delay_ms(100);
+>>>>>>> parent of 906c14e... Bootloader working
 	}
 	return 0;
 }
