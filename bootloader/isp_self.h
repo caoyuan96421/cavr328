@@ -29,7 +29,7 @@ void ispFlushPage(unsigned long address);
 void ispReadFlash(uint16_t address, uint8_t len, uint8_t buffer[]);
 
 /* write byte to eeprom at given address */
-uint8_t ispWriteEEPROM(unsigned int address, uint8_t len, uint8_t buffer[]);
+void ispWriteEEPROM(unsigned int address, uint8_t len, uint8_t buffer[]);
 
 
 #endif /*__ISP_SELF_H__*/

@@ -39,10 +39,10 @@ uint8_t usbFunctionSetup(uint8_t data[8]) {
 
 		/* set compatibility mode of address delivering */
 		prog_address_newmode = 0;
-		usart0_write("ISP connect\r\n");
+//		usart0_write("ISP connect\r\n");
 
 	} else if (data[1] == USBASP_FUNC_DISCONNECT) {
-		usart0_write("ISP disconnect\r\n");
+//		usart0_write("ISP disconnect\r\n");
 	} else if (data[1] == USBASP_FUNC_TRANSMIT) {
 		ispProcessCommand(data+2, replyBuffer);
 		len = 4;
@@ -72,12 +72,12 @@ uint8_t usbFunctionSetup(uint8_t data[8]) {
 		prog_nbytes = (data[7] << 8) | data[6];
 		prog_state = PROG_STATE_READEEPROM;
 		len = 0xff; /* multiple in */
-		usart0_write("ISP readEEP\r\n");
+//		usart0_write("ISP readEEP\r\n");
 
 	} else if (data[1] == USBASP_FUNC_ENABLEPROG) {
 		replyBuffer[0] = ispEnterProgrammingMode();
 		len = 1;
-		usart0_write("ISP en prog\r\n");
+//		usart0_write("ISP en prog\r\n");
 
 	} else if (data[1] == USBASP_FUNC_WRITEFLASH) {
 
@@ -95,11 +95,11 @@ uint8_t usbFunctionSetup(uint8_t data[8]) {
 		else {
 			len = 0xff; /* multiple out */
 		}
-		usart0_write("ISP writeflash\r\n");
-		usart0_write_hex_word(prog_nbytes);
-		usart0_write("\r\n");
-		usart0_write_hex_word(prog_address);
-		usart0_write("\r\n");
+//		usart0_write("ISP writeflash\r\n");
+//		usart0_write_hex_word(prog_nbytes);
+//		usart0_write("\r\n");
+//		usart0_write_hex_word(prog_address);
+//		usart0_write("\r\n");
 	} else if (data[1] == USBASP_FUNC_WRITEEEPROM) {
 
 		if (!prog_address_newmode)
@@ -110,7 +110,7 @@ uint8_t usbFunctionSetup(uint8_t data[8]) {
 		prog_nbytes = (data[7] << 8) | data[6];
 		prog_state = PROG_STATE_WRITEEEPROM;
 		len = 0xff; /* multiple out */
-		usart0_write("ISP writeeep\r\n");
+//		usart0_write("ISP writeeep\r\n");
 
 	} else if (data[1] == USBASP_FUNC_SETLONGADDRESS) {
 
@@ -124,7 +124,7 @@ uint8_t usbFunctionSetup(uint8_t data[8]) {
 		/* set sck option */
 		replyBuffer[0] = 0;
 		len = 1;
-		usart0_write("ISP setsck\r\n");
+//		usart0_write("ISP setsck\r\n");
 
 	} else if (data[1] == USBASP_FUNC_GETCAPABILITIES) {
 		replyBuffer[0] = 0;	/*Doesn't support TPI capability*/
@@ -140,8 +140,6 @@ uint8_t usbFunctionSetup(uint8_t data[8]) {
 }
 
 uint8_t usbFunctionRead(uint8_t *data, uint8_t len) {
-
-	uint8_t i;
 
 	/* check if programmer is in correct read state */
 	if ((prog_state != PROG_STATE_READFLASH) && (prog_state
@@ -167,9 +165,6 @@ uint8_t usbFunctionRead(uint8_t *data, uint8_t len) {
 
 uint8_t usbFunctionWrite(uint8_t *data, uint8_t len) {
 
-	uint8_t retVal = 0;
-	uint8_t i;
-
 	/* check if programmer is in correct write state */
 	if ((prog_state != PROG_STATE_WRITEFLASH) && (prog_state
 			!= PROG_STATE_WRITEEEPROM)) {
@@ -184,9 +179,9 @@ uint8_t usbFunctionWrite(uint8_t *data, uint8_t len) {
 			if(prog_nbytes == 0){
 				if((prog_blockflags & PROG_BLOCKFLAG_LAST) && (prog_address & (PAGE_SIZE-1)) != 0){ /* If not aligned on page boundary */
 					ispFlushPage(prog_address);
-					usart0_write("Flush ");
-					usart0_write_hex_word(prog_address);
-					usart0_write("\r\n");
+//					usart0_write("Flush ");
+//					usart0_write_hex_word(prog_address);
+//					usart0_write("\r\n");
 				}
 				prog_state = PROG_STATE_IDLE;
 				return 1;		/* No more data to receive */
@@ -207,37 +202,5 @@ uint8_t usbFunctionWrite(uint8_t *data, uint8_t len) {
 			return 1;
 		}
 	}
-
-//	for (i = 0; i < len; i++) {
-//		if (prog_state == PROG_STATE_WRITEFLASH) {
-//			/* Flash */
-//			if (prog_pagesize == 0) {
-//				/* not paged */
-//				ispWriteFlash(prog_address, data[i], 1);
-//			} else {
-//				/* paged */
-//				ispWriteFlash(prog_address, data[i], 0);
-//				prog_pagecounter--;
-//				if (prog_pagecounter == 0) {
-//					ispFlushPage(prog_address, data[i]);
-//					prog_pagecounter = prog_pagesize;
-//				}
-//			}
-//		} else {
-//			/* EEPROM */
-//			ispWriteEEPROM(prog_address, data[i]);
-//		}
-//		prog_nbytes--;
-//		if (prog_nbytes == 0) {
-//			prog_state = PROG_STATE_IDLE;
-//			if ((prog_blockflags & PROG_BLOCKFLAG_LAST) && (prog_pagecounter
-//					!= prog_pagesize)) {
-//				/* last block and page flush pending, so flush it now */
-//				ispFlushPage(prog_address, data[i]);
-//			}
-//			retVal = 1; // Need to return 1 when no more data is to be received
-//		}
-//		prog_address++;
-//	}
 	return 0;
 }

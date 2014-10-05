@@ -52,10 +52,35 @@ void usart0_write_hex_word(uint16_t data){
 }
 
 int main(){
+	usart0_init();
+	PORTD = 0x0C;
+	DDRB |= 0x01; /*Enable LED*/
+	_delay_ms(100);
+	usart0_write_hex(PIND);
+	usart0_write("\r\n");
+	if((PIND & 0x0C) != 0){
+		PORTD = 0x00;
+		usart0_write("Enter app\r\n");
+		/*while(1){
+			ledOn();
+			_delay_ms(1000);
+			ledOff();
+			_delay_ms(1000);
+		}*/
+		asm volatile("jmp 0x0000\n\t");
+	}
+	usart0_write("Enter bootloader\r\n");
+	while((PIND & 0x0C) != 0);
+	PORTD = 0;
+	uint8_t i=5;
+	while(i--){
+		ledOn();
+		_delay_ms(100);
+		ledOff();
+		_delay_ms(100);
+	}
 
 	usbInit();
-	usart0_init();
-	DDRB |= 0x01; /*Enable LED*/
 
 	MCUCR = (1<<IVCE);	/*Move vector table to the Bootloader region.*/
 	MCUCR = (1<<IVSEL);	/*Move vector table to the Bootloader region.*/
@@ -63,7 +88,7 @@ int main(){
 	usbDeviceDisconnect();
 	_delay_ms(100);
 	usbDeviceConnect();
-	usart0_write("\r\nBootloader\r\n");
+	//usart0_write("\r\nBootloader\r\n");
 	sei();
 	
 	while(1){

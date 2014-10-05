@@ -2,17 +2,15 @@
 #include <avr/pgmspace.h>
 #include <avr/boot.h>
 #include <avr/eeprom.h>
+#include <util/delay.h>
+#include <avr/interrupt.h>
 #include "isp_self.h"
 #include "bootloader.h"
 
-static uint8_t command, bytecount=0;
-static uint8_t isp_data[4];
 void ispConnect(){
-	bytecount=0;
 }
 
 void ispDisconnect(){
-	bytecount=0;
 }
 
 void ispProcessCommand(uint8_t command[], uint8_t reply[]){
@@ -93,17 +91,19 @@ void ispReadFlash(uint16_t address, uint8_t len, uint8_t buffer[]){
 }
 
 void ispWriteFlash(unsigned long address, uint8_t len, uint8_t buffer[]){
-	if((address & 1) | (len & 1))
-		return;
 	uint8_t i;
 	for(i=0;i<len;i+=2){
+		cli();
 		boot_page_fill_safe(address+i,*((uint16_t *)(buffer+i)));
+		sei();
+//		usart0_write_hex_word(address+i);
+//		usart0_write("\r\n");
 		if(((address+i+2) & (PAGE_SIZE-1))== 0){ /* Page Boundary*/
 			boot_page_write_safe(address+i+1); /* Write last page */
 			boot_rww_enable_safe();
-			usart0_write("Write ");
-			usart0_write_hex_word(address+i+1);
-			usart0_write("\r\n");
+//			usart0_write("Write ");
+//			usart0_write_hex_word(address+i+1);
+//			usart0_write("\r\n");
 		}
 	}
 }
@@ -111,9 +111,12 @@ void ispWriteFlash(unsigned long address, uint8_t len, uint8_t buffer[]){
 void ispFlushPage(unsigned long address){
 	boot_page_write_safe(address); /* Write page */
 	boot_rww_enable_safe();
+//	usart0_write("Write ");
+//	usart0_write_hex_word(address);
+//	usart0_write("\r\n");
 }
 
-uint8_t ispWriteEEPROM(unsigned int address, uint8_t len, uint8_t buffer[]){
+void ispWriteEEPROM(unsigned int address, uint8_t len, uint8_t buffer[]){
 	eeprom_busy_wait();
 	eeprom_write_block(buffer, (void *) address, len);
 }
