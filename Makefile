@@ -32,7 +32,7 @@ INC = -I../usbdrv
 DEF = 
 LIB = -Wl,-lm
 LDFLAGS = -Wl,-Map,$(basename $@).map -Wl,--gc-sections
-GCC_OPTS = -Wall -Os
+GCC_OPTS = -Wall -Os -std=gnu99 -g2
 
 
 # Include source files in other directories
@@ -57,6 +57,7 @@ all: $(OUTPUT)/$(PROJECT).elf $(OUTPUT)/$(PROJECT).hex $(OUTPUT)/$(PROJECT).dump
 
 bootloader: LDFLAGS += -Wl,--section-start,.text=0x7000
 bootloader: INC += -I../bootloader
+bootloader: DEF += -DBOOTLOADER
 bootloader: $(OUTPUT)/$(PROJECT)-bootloader.elf $(OUTPUT)/$(PROJECT)-bootloader.hex $(OUTPUT)/$(PROJECT)-bootloader.dump $(addprefix $(OUTPUT)/,$(OBJ-BOOTLOADER))
 	
 # Generic rule for compiling C files:

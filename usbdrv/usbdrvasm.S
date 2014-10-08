@@ -14,6 +14,8 @@ general code (preprocessor acrobatics and CRC computation) and then includes
 the file appropriate for the given clock rate.
 */
 
+#if MCUCONF_USB_USB | defined(BOOTLOADER)
+
 #define __SFR_OFFSET 0      /* used by avr-libc's register definitions */
 #include "usbportability.h"
 #include "usbdrv.h"         /* for common defs */
@@ -390,3 +392,5 @@ usbMFTimeout:
 #       error "USB_CFG_CLOCK_KHZ is not one of the supported non-crc-rates!"
 #   endif
 #endif /* USB_CFG_CHECK_CRC */
+
+#endif

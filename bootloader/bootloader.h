@@ -43,8 +43,8 @@
 #define ledOn()    PORTB |= 0x01
 #define ledOff()   PORTB &= ~0x01
 
-//void usart0_write(const char *s);
-//void usart0_write_hex(uint8_t data);
-//void usart0_write_hex_word(uint16_t data);
+/*void usart0_write(const char *s);
+void usart0_write_hex(uint8_t data);
+void usart0_write_hex_word(uint16_t data);*/
 
 #endif /*__BOOTLOADER_H__*/

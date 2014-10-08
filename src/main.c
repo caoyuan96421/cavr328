@@ -1,27 +1,25 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include "GPIO.h"
 #include "Serial.h"
 #include "usbdrv.h"
+#include "LCD.h"
 #include <stdio.h>
 char str[128]=__DATE__""__TIME__"\r\n";
-extern void updateUSB();
-
-
-FUSEMEM __fuse_t fusedata = {
-	0xFF,
-	0xD8,		// BOOTRST = 0 (enabled)
-	0xFF
-};
+//extern void updateUSB();
 
 
 int main(){
 	serialInit(&Serial0, 9600);
-	usbInit();
-	usbDeviceDisconnect();
+//	usbInit();
+	lcdInit();
+	lcdSetCursor(1,0);
+/*	usbDeviceDisconnect();
 	_delay_ms(100);
-	usbDeviceConnect();
+	usbDeviceConnect();*/
 	sei();
+	GPIOB->DDR |= 0x01;
 	//uint16_t length = sprintf(str,"MCUCR=%02x\r\n",MCUCR);
 	//serialWriteBlocking(&Serial0, length, str);
 	serialWriteBlocking(&Serial0, 7, "Init\r\n");
@@ -30,8 +28,15 @@ int main(){
 		//uint16_t length = sprintf(str,"%d\r\n",counter++);
 		serialWrite(&Serial0, strlen(str), str);
 		//serialWrite(&Serial0, length, str);
-		updateUSB();
-		_delay_ms(20);
+		//updateUSB();
+		_delay_ms(100);
+		GPIOB->PIN |= 0x01;
+		lcdPrint("Hello World!");
+		_delay_ms(100);
+		lcdShift(1);
+		lcdShift(1);
+		lcdShift(1);
+		lcdShift(1);
 	}
 	return 0;
 }

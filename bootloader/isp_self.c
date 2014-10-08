@@ -4,6 +4,7 @@
 #include <avr/eeprom.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <util/atomic.h>
 #include "isp_self.h"
 #include "bootloader.h"
 
@@ -92,25 +93,41 @@ void ispReadFlash(uint16_t address, uint8_t len, uint8_t buffer[]){
 
 void ispWriteFlash(unsigned long address, uint8_t len, uint8_t buffer[]){
 	uint8_t i;
+	ledOn();
 	for(i=0;i<len;i+=2){
 		cli();
-		boot_page_fill_safe(address+i,*((uint16_t *)(buffer+i)));
+		boot_page_fill(address+i,*((uint16_t *)(buffer+i)));
 		sei();
+		boot_spm_busy_wait();
 //		usart0_write_hex_word(address+i);
 //		usart0_write("\r\n");
 		if(((address+i+2) & (PAGE_SIZE-1))== 0){ /* Page Boundary*/
-			boot_page_write_safe(address+i+1); /* Write last page */
-			boot_rww_enable_safe();
+			cli();
+			boot_page_write(address+i+1); /* Write last page */
+			sei();
+			boot_spm_busy_wait();
+			cli();
+			boot_rww_enable();
+			sei();
+			boot_spm_busy();
+			
 //			usart0_write("Write ");
 //			usart0_write_hex_word(address+i+1);
 //			usart0_write("\r\n");
 		}
 	}
+	ledOff();
 }
 
 void ispFlushPage(unsigned long address){
-	boot_page_write_safe(address); /* Write page */
-	boot_rww_enable_safe();
+	cli();
+	boot_page_write(address); /* Write page */
+	sei();
+	boot_spm_busy_wait();
+	cli();
+	boot_rww_enable();
+	sei();
+	boot_spm_busy_wait();
 //	usart0_write("Write ");
 //	usart0_write_hex_word(address);
 //	usart0_write("\r\n");

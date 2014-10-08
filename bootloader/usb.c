@@ -95,7 +95,7 @@ uint8_t usbFunctionSetup(uint8_t data[8]) {
 		else {
 			len = 0xff; /* multiple out */
 		}
-//		usart0_write("ISP writeflash\r\n");
+//		usart0_write("ISP writeflash\r\nn: ");
 //		usart0_write_hex_word(prog_nbytes);
 //		usart0_write("\r\n");
 //		usart0_write_hex_word(prog_address);
@@ -164,7 +164,7 @@ uint8_t usbFunctionRead(uint8_t *data, uint8_t len) {
 }
 
 uint8_t usbFunctionWrite(uint8_t *data, uint8_t len) {
-
+//	usart0_write("hi\r\n");
 	/* check if programmer is in correct write state */
 	if ((prog_state != PROG_STATE_WRITEFLASH) && (prog_state
 			!= PROG_STATE_WRITEEEPROM)) {
@@ -202,5 +202,6 @@ uint8_t usbFunctionWrite(uint8_t *data, uint8_t len) {
 			return 1;
 		}
 	}
+//	usart0_write("cont\r\n");
 	return 0;
 }

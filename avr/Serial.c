@@ -4,7 +4,7 @@
 #include "Serial.h"
 #include "FIFO.h"
 
-#ifdef MCUCONF_USE_SERIAL
+#if MCUCONF_USE_SERIAL
 
 void serialInit(Serial *pser, uint32_t baud){
 	uint32_t divide = (((uint32_t)F_CPU) >> 4) / baud - 1;

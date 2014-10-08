@@ -3,8 +3,10 @@
  * Created on: 2014/09/30
  * File name: usb.c
 */
-
+#include "mcuconf.h"
 #include "usbdrv.h"
+
+#if MCUCONF_USE_USB
 
 PROGMEM const char usbHidReportDescriptor[52] = { /* USB report descriptor, size must match usbconfig.h */
     0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
@@ -90,3 +92,4 @@ void updateUSB(){
 		usbSetInterrupt(&reportBuffer, sizeof(reportBuffer));
 	}
 }
+#endif
