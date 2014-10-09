@@ -21,5 +21,8 @@
 #define MCUCONF_LCD_DATA_PORT			GPIOC
 #define MCUCONF_LCD_DATA_OFFSET			0
 
+/*Printf utilites*/
+#define MCUCONF_USE_PRINTF				true
+#define MCUCONF_PRINTF_USE_FLOAT		true
 
 #endif /*__MCUCONF_H__*/

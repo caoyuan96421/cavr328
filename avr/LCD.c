@@ -2,6 +2,7 @@
 #include <util/delay.h>
 #include "GPIO.h"
 #include "LCD.h"
+#include "Channel.h"
 
 #if MCUCONF_USE_LCD
 
@@ -106,5 +107,9 @@ void lcdPrint(char *s){
 		_write_byte(*s);
 	}
 }
+
+OutputChannel LCD = {
+	(void (*)(char))lcdSendData,
+};
 
 #endif

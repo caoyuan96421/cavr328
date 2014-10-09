@@ -5,6 +5,7 @@
 #include "Serial.h"
 #include "usbdrv.h"
 #include "LCD.h"
+#include "avrprintf.h"
 #include <stdio.h>
 char str[128]=__DATE__""__TIME__"\r\n";
 //extern void updateUSB();
@@ -23,20 +24,18 @@ int main(){
 	//uint16_t length = sprintf(str,"MCUCR=%02x\r\n",MCUCR);
 	//serialWriteBlocking(&Serial0, length, str);
 	serialWriteBlocking(&Serial0, 7, "Init\r\n");
-	uint16_t counter = 0;
+	uint8_t counter = 0;
 	while(1){
 		//uint16_t length = sprintf(str,"%d\r\n",counter++);
-		serialWrite(&Serial0, strlen(str), str);
+		//serialWrite(&Serial0, strlen(str), str);
 		//serialWrite(&Serial0, length, str);
 		//updateUSB();
 		_delay_ms(100);
 		GPIOB->PIN |= 0x01;
-		lcdPrint("Hello World!");
+		//lcdPrint("Hello World!");
+		lcdClear();
+		avrprintf(&LCD, "Hello %02x!", counter++);
 		_delay_ms(100);
-		lcdShift(1);
-		lcdShift(1);
-		lcdShift(1);
-		lcdShift(1);
 	}
 	return 0;
 }

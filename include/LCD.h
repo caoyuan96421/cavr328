@@ -3,6 +3,7 @@
 #define __LCD_H__
 
 #include "mcuconf.h"
+#include "avrprintf.h"
 #if MCUCONF_USE_LCD
 
 #if !defined(MCUCONF_LCD_E_PORT) || !defined(MCUCONF_LCD_E_PIN) || !defined(MCUCONF_LCD_RS_PORT)\
@@ -16,6 +17,9 @@
 
 /*Macro functions*/
 #define lcdDisplayOff()			lcdSendCommand(0x08)
+#define lcdHome()				lcdSendCommand(0x02)
+#define lcdClear()				lcdSendCommand(0x01)
+
 
 #define lcdSetCursor(on, blink) lcdSendCommand(0x0C | (on ? 0x02 : 0) | (blink ? 0x01:0))
 
@@ -30,6 +34,8 @@ void lcdSendData(uint8_t data);
 
 /*Advanced functions*/
 void lcdPrint(char *s);
+
+extern OutputChannel LCD;
 
 #endif
 
