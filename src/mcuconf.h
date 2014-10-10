@@ -12,6 +12,7 @@
 
 /*LCD Driver Config*/
 #define MCUCONF_USE_LCD					true
+#define MCUCONF_LCD_USE_BUSY_CHECK		false
 #define MCUCONF_LCD_E_PORT				GPIOB
 #define MCUCONF_LCD_E_PIN				1
 #define MCUCONF_LCD_RS_PORT				GPIOB

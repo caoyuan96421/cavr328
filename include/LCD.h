@@ -16,10 +16,15 @@
 #define LCD_DATA_DELAY	10	/*us*/
 
 /*Macro functions*/
-#define lcdDisplayOff()			lcdSendCommand(0x08)
-#define lcdHome()				lcdSendCommand(0x02)
-#define lcdClear()				lcdSendCommand(0x01)
+#if !MCUCONF_LCD_USE_BUSY_CHECK
+	#define lcdHome()				{lcdSendCommand(0x02);_delay_ms(1.6);}
+	#define lcdClear()				{lcdSendCommand(0x01);_delay_ms(1.6);}
+#else
+	#define lcdHome()				lcdSendCommand(0x02)
+	#define lcdClear()				lcdSendCommand(0x01)
+#endif
 
+#define lcdDisplayOff()			lcdSendCommand(0x08)
 
 #define lcdSetCursor(on, blink) lcdSendCommand(0x0C | (on ? 0x02 : 0) | (blink ? 0x01:0))
 

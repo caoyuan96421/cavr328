@@ -12,7 +12,7 @@ char str[128]=__DATE__""__TIME__"\r\n";
 
 
 int main(){
-	serialInit(&Serial0, 9600);
+//	serialInit(&Serial0, 9600);
 //	usbInit();
 	lcdInit();
 //	lcdSetCursor(1,0);
@@ -23,7 +23,7 @@ int main(){
 	GPIOB->DDR |= 0x01;
 	//uint16_t length = sprintf(str,"MCUCR=%02x\r\n",MCUCR);
 	//serialWriteBlocking(&Serial0, length, str);
-	serialWriteBlocking(&Serial0, 7, "Init\r\n");
+//	serialWriteBlocking(&Serial0, 7, "Init\r\n");
 	uint8_t counter = 0;
 	while(1){
 		//uint16_t length = sprintf(str,"%d\r\n",counter++);
