@@ -15,7 +15,7 @@ int main(){
 	serialInit(&Serial0, 9600);
 //	usbInit();
 	lcdInit();
-	lcdSetCursor(1,0);
+//	lcdSetCursor(1,0);
 /*	usbDeviceDisconnect();
 	_delay_ms(100);
 	usbDeviceConnect();*/
@@ -34,7 +34,8 @@ int main(){
 		GPIOB->PIN |= 0x01;
 		//lcdPrint("Hello World!");
 		lcdClear();
-		avrprintf(&LCD, "Hello %02x!", counter++);
+		uint8_t data = ((GPIOD->PIN & 0x03)) | ((GPIOC->PIN & 0x30) >> 2);
+		avrprintf(&LCD, "Data=%x", data);
 		_delay_ms(100);
 	}
 	return 0;
