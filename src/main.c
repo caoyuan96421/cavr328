@@ -30,13 +30,13 @@ int main(){
 		//serialWrite(&Serial0, strlen(str), str);
 		//serialWrite(&Serial0, length, str);
 		//updateUSB();
-		_delay_ms(100);
+		//_delay_ms(100);
 		GPIOB->PIN |= 0x01;
 		//lcdPrint("Hello World!");
 		lcdClear();
 		uint8_t data = ((GPIOD->PIN & 0x03)) | ((GPIOC->PIN & 0x30) >> 2);
 		avrprintf(&LCD, "Data=%x", data);
-		_delay_ms(100);
+		_delay_ms(10);
 	}
 	return 0;
 }
