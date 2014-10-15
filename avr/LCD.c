@@ -27,6 +27,7 @@ static inline void _write_nibble(uint8_t nibble){
 	setE;
 	_delay_us(LCD_DATA_DELAY);
 	clrE;
+	_delay_us(LCD_DATA_DELAY);
 }
 static void _write_byte(uint8_t byte){
 	/*High nibble*/
@@ -35,12 +36,14 @@ static void _write_byte(uint8_t byte){
 	setE;
 	_delay_us(LCD_DATA_DELAY);
 	clrE;
+	_delay_us(LCD_DATA_DELAY);
 	/*Low nibble*/
 	MCUCONF_LCD_DATA_PORT->PORT &= ~(LCD_DATA_MASK);
 	MCUCONF_LCD_DATA_PORT->PORT |= (byte & 0x0F) << MCUCONF_LCD_DATA_OFFSET;
 	setE;
 	_delay_us(LCD_DATA_DELAY);
 	clrE;
+	_delay_us(LCD_DATA_DELAY);
 }
 static void _check_busy(){
 #if MCUCONF_LCD_USE_BUSY_CHECK
@@ -53,9 +56,11 @@ static void _check_busy(){
 		_delay_us(LCD_DATA_DELAY);
 		busy = MCUCONF_LCD_DATA_PORT->PIN & (1<<(MCUCONF_LCD_DATA_OFFSET + 3));
 		clrE;
+		_delay_us(LCD_DATA_DELAY);
 		setE;
 		_delay_us(LCD_DATA_DELAY);
 		clrE;
+		_delay_us(LCD_DATA_DELAY);
 	}
 	MCUCONF_LCD_DATA_PORT->DDR |= (LCD_DATA_MASK);
 	setWrite;
@@ -102,18 +107,12 @@ void lcdInit(){
 void lcdSendCommand(uint8_t command){
 	_check_busy();
 	setCommand;
-#if MCUCONF_LCD_USE_BUSY_CHECK
-	setWrite;
-#endif
 	_write_byte(command);
 }
 
 void lcdSendData(uint8_t data){
 	_check_busy();
 	setData;
-#if MCUCONF_LCD_USE_BUSY_CHECK
-	setWrite;
-#endif
 	_write_byte(data);
 }
 
@@ -121,9 +120,6 @@ void lcdPrint(char *s){
 	for(;*s;s++){
 		_check_busy();
 		setData;
-#if MCUCONF_LCD_USE_BUSY_CHECK
-		setWrite;
-#endif
 		_write_byte(*s);
 	}
 }

@@ -13,7 +13,7 @@
 #endif
 
 #define LCD_DATA_MASK	(0x0F << MCUCONF_LCD_DATA_OFFSET)
-#define LCD_DATA_DELAY	10	/*us*/
+#define LCD_DATA_DELAY	1	/*us*/
 
 /*Macro functions*/
 #if !MCUCONF_LCD_USE_BUSY_CHECK
