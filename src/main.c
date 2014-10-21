@@ -7,10 +7,11 @@
 #include "LCD.h"
 #include "avrprintf.h"
 #include <stdio.h>
+#include <avr/cpufunc.h>
 char str[128]=__DATE__""__TIME__"\r\n";
 //extern void updateUSB();
 
-
+uint16_t in_data, out_data = 0x0F0F;
 int main(){
 //	serialInit(&Serial0, 9600);
 //	usbInit();
@@ -20,14 +21,14 @@ int main(){
 	_delay_ms(100);
 	usbDeviceConnect();*/
 	sei();
-	GPIOB->DDR |= (1<<0) | (1<<5);
+	GPIOB->DDR |= (1<<0) | (1<<5) | (1<<3);
 	//GPIOB->DDR &= ~(1<<4);
-	GPIOC->DDR |= (1<<5);
-	GPIOC->PORT |= (1<<5);
+	GPIOC->DDR |= (1<<4) | (1<<5);
+	GPIOC->PORT |= (1<<4) | (1<<5);
 	//uint16_t length = sprintf(str,"MCUCR=%02x\r\n",MCUCR);
 	//serialWriteBlocking(&Serial0, length, str);
 //	serialWriteBlocking(&Serial0, 7, "Init\r\n");
-	SPCR |= (1 << SPE) | (1 << MSTR);
+	SPCR |= (1 << SPE) | (1 << MSTR) | (1<<SPR0);
 	uint8_t counter = 0;
 	while(1){
 		//uint16_t length = sprintf(str,"%d\r\n",counter++);
@@ -38,17 +39,23 @@ int main(){
 		GPIOB->PIN |= 0x01;
 		//lcdPrint("Hello World!");
 		lcdClear();
+		
+		
 		GPIOC->PORT &= ~(1<<5);// Parallel load
-		asm volatile("nop\n\t");
 		GPIOC->PORT |= (1<<5);
-		asm volatile("nop\n\t");
-		SPDR = 0x00;	// write dummy
+		
+		
+		SPDR = (out_data >> 8);	
 		while((SPSR & (1<<SPIF)) == 0);
-		uint16_t data = SPDR;
-		SPDR = 0x00;	// write dummy
+		in_data = SPDR;
+		SPDR = (out_data & 0xFF);	
 		while((SPSR & (1<<SPIF)) == 0);
-		data = (data << 8) | SPDR;
-		avrprintf(&LCD, "Data=%04x", data);
+		in_data = (in_data << 8) | SPDR;
+		
+		GPIOC->PORT &= ~(1<<4);
+		GPIOC->PORT |= (1<<4);// Update Output
+		
+		avrprintf(&LCD, "Data=%04x", in_data);
 		_delay_ms(100);
 	}
 	return 0;
