@@ -1,6 +1,8 @@
 #include <stdarg.h>
 #include "mcuconf.h"
 #include "Channel.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 #define MAX_FILLER 11
 #define FLOAT_PRECISION 5

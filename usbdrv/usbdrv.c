@@ -6,7 +6,8 @@
  * Copyright: (c) 2005 by OBJECTIVE DEVELOPMENT Software GmbH
  * License: GNU GPL v2 (see License.txt), GNU GPL v3 or proprietary (CommercialLicense.txt)
  */
-#if MCUCONF_USE_USB | defined(BOOTLOADER)
+#include "mcuconf.h"
+#if MCUCONF_USE_USB || defined(BOOTLOADER)
 
 #include "usbdrv.h"
 #include "oddebug.h"
