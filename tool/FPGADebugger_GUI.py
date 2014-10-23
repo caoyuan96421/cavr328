@@ -45,11 +45,19 @@ class Application(tk.Tk):
         self.writeButton = tk.Button(self, text='Write', command=self.write)
         self.writeButton.grid(row=2,column=2)
 
+        tk.Label(self,text='Clock: ').grid()
+        self.clockSelect = tk.Spinbox(self, from_=0, to=15, state='readonly', width=3)
+        self.clockSelect.grid(row=3,column=1)
+
+        self.tickButton = tk.Button(self, text='Tick', command=self.tick)
+        self.tickButton.grid(row=3,column=2)
+
         self.bind("<Return>",self.write_wa)
         self.bind("<Up>",self.inc_wa)
         self.bind("<Down>",self.dec_wa)
         self.bind("<Prior>",self.inc_256_wa)
         self.bind("<Next>",self.dec_256_wa)
+        self.bind("<space>", self.tick_wa)
 
     def genHex(self,*args):
         newtext = self.writeData.get()
@@ -90,6 +98,21 @@ class Application(tk.Tk):
             return
         self.debugger.write(data)
         self.writeData.icursor(0)
+
+    def tick(self):
+        clk = int(self.clockSelect.get())
+        data = int(self.writeData.get(),16)
+        if self.debugger is None:
+            raise ValueError('Device is not connected.')
+            return
+        self.debugger.write(data & ~(1<<clk))
+        self.debugger.write(data | (1<<clk))
+        time.sleep(0.1)
+        self.debugger.write(data & ~(1<<clk))
+        time.sleep(0.1)
+    def tick_wa(self,*args):
+        self.tick()
+        
     def write_wa(self,*args):
         self.write()
 
