@@ -7,11 +7,11 @@
 #include "LCD.h"
 #include "avrprintf.h"
 #include <stdio.h>
-
+char s[] = "AB";
 uint16_t in_data;
 uint16_t out_data = 0x0000;
 int main(){
-//	serialInit(&Serial0, 9600);
+	serialInit(&Serial0, 38400);
 	usbInit();
 	lcdInit();
 	usbDeviceDisconnect();
@@ -43,7 +43,7 @@ int main(){
 			lcdClear();
 			avrprintf(&LCD, "In=%04x,Out=%04x", in_data, out_data);
 		}
-		
+		serialWriteBlocking(&Serial0,2,(uint8_t *)s);
 		_delay_ms(10);
 		GPIOB->PORT &= ~0x01;
 	}
