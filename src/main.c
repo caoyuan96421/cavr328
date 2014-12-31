@@ -27,7 +27,7 @@ int main(){
 		//GPIOC->PORT &= ~(1<<5);// Parallel load
 		//GPIOC->PORT |= (1<<5);
 		
-		SPDR = (out_data >> 8);	
+		SPDR = (out_data & 0xFF);	
 		while((SPSR & (1<<SPIF)) == 0);
 		
 		GPIOC->PORT &= ~(1<<4);
@@ -35,7 +35,7 @@ int main(){
 		
 		if(counter++ % 10==0){
 			lcdClear();
-			avrprintf(&LCD, "Out=%04x", out_data);
+			avrprintf(&LCD, "Out=%02x", out_data);
 		}
 		_delay_ms(10);
 		GPIOB->PORT &= ~0x01;

@@ -2,15 +2,15 @@
 import tkinter as tk
 import time
 from threading import Thread
-from FPGADebugger import *
+from SwitchMatrix import *
 
 class Application(tk.Tk):
     def __init__(self, master=None):
         tk.Tk.__init__(self,master)
         self.grid()
         self.createWidgets()
-        self.debugger = None
-        self.thread = Thread(target = self.run, name = 'FPGA Debugger Daemon')
+        self.device = None
+        self.thread = Thread(target = self.run, name = 'SwitchMatrix Daemon')
         self.kill = False
         self.thread.start()
     def destroy(self):
@@ -25,39 +25,24 @@ class Application(tk.Tk):
         self.quitButton = tk.Button(self, text='Quit', command = self.destroy)
         self.quitButton.grid(row=0,column=1)
 
-        tk.Label(self, text='Read: 0x').grid()
-        
-        self.readDataVar = tk.StringVar()
-        self.readData = tk.Label(self, textvariable=self.readDataVar)
-        self.readDataVar.set('0000')
-        self.readData.grid(row=1,column=1)
-
         tk.Label(self, text='Write: 0x').grid()
 
-        self.writeDataVar = tk.StringVar(value='0000')
+        self.writeDataVar = tk.StringVar(value='00')
         self.writeDataVar.trace("w", self.genHex)
         self.writeData = tk.Entry(self,
                                   textvariable=self.writeDataVar,
-                                  width=5
+                                  width=3
                                   )
-        self.writeData.grid(row=2,column=1)
+        self.writeData.grid(row=1,column=1)
 
         self.writeButton = tk.Button(self, text='Write', command=self.write)
-        self.writeButton.grid(row=2,column=2)
-
-        tk.Label(self,text='Clock: ').grid()
-        self.clockSelect = tk.Spinbox(self, from_=0, to=15, state='readonly', width=3)
-        self.clockSelect.grid(row=3,column=1)
-
-        self.tickButton = tk.Button(self, text='Tick', command=self.tick)
-        self.tickButton.grid(row=3,column=2)
+        self.writeButton.grid(row=1,column=2)
 
         self.bind("<Return>",self.write_wa)
         self.bind("<Up>",self.inc_wa)
         self.bind("<Down>",self.dec_wa)
         self.bind("<Prior>",self.inc_256_wa)
         self.bind("<Next>",self.dec_256_wa)
-        self.bind("<space>", self.tick_wa)
 
     def genHex(self,*args):
         newtext = self.writeData.get()
@@ -67,51 +52,33 @@ class Application(tk.Tk):
                 newtext = newtext[:i] + newtext[i+1:]
             else:
                 i = i+1
-        if len(newtext) > 4:
-            newtext = newtext[0:4]
+        if len(newtext) > 2:
+            newtext = newtext[0:2]
         if len(newtext) == 0:
             newtext = '0'
-        #print(newtext)
         self.writeDataVar.set(newtext)
-        #print(self.writeDataVar.get())
+        
     def connect(self):
-        if self.debugger is None:
-            self.debugger = FPGADebugger()
-        if self.debugger.device is None:
+        self.device = SwitchMatrix()
+        if self.device.device is None:
             raise ValueError('Device connection failed.')
 
     def run(self):
         while True:
             if self.kill:
                 break
-            if self.debugger is None:
+            if self.device is None:
                 continue
-            data = self.debugger.read()
-            self.readDataVar.set('%04X' % data)
-            time.sleep(0.05)
+            time.sleep(1)
         print('end')
 
     def write(self):
         data = int(self.writeData.get(),16)
-        if self.debugger is None:
+        if self.device is None:
             raise ValueError('Device is not connected.')
             return
-        self.debugger.write(data)
+        self.device.write(data)
         self.writeData.icursor(0)
-
-    def tick(self):
-        clk = int(self.clockSelect.get())
-        data = int(self.writeData.get(),16)
-        if self.debugger is None:
-            raise ValueError('Device is not connected.')
-            return
-        self.debugger.write(data & ~(1<<clk))
-        self.debugger.write(data | (1<<clk))
-        time.sleep(0.1)
-        self.debugger.write(data & ~(1<<clk))
-        time.sleep(0.1)
-    def tick_wa(self,*args):
-        self.tick()
         
     def write_wa(self,*args):
         self.write()
@@ -120,25 +87,26 @@ class Application(tk.Tk):
         data = int(self.writeData.get(),16) + 1
         if(data > 0xFFFF):
             data = data - 0x10000
-        self.writeDataVar.set('%04X' % data)
+        self.writeDataVar.set('%02X' % data)
     def inc_256_wa(self,*args): 
         data = int(self.writeData.get(),16) + 256
         if(data > 0xFFFF):
             data = data - 0x10000
-        self.writeDataVar.set('%04X' % data)
+        self.writeDataVar.set('%02X' % data)
 
     def dec_wa(self,*args):
         data = int(self.writeData.get(),16) - 1
         if(data < 0):
             data = 0x10000 + data
-        self.writeDataVar.set('%04X' % data)
+        self.writeDataVar.set('%02X' % data)
     
     def dec_256_wa(self,*args):
         data = int(self.writeData.get(),16) - 256
         if(data < 0):
             data = 0x10000 + data
-        self.writeDataVar.set('%04X' % data)
+        self.writeDataVar.set('%02X' % data)
 app = Application()
-app.title('Simple FPGA Debugger')
+app.title('SwitchMatrix')
+app.connect()
 app.mainloop()
 
