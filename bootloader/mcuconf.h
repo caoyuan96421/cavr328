@@ -24,6 +24,6 @@
 
 /*Printf utilites*/
 #define MCUCONF_USE_PRINTF				true
-#define MCUCONF_PRINTF_USE_FLOAT		true
+#define MCUCONF_PRINTF_USE_FLOAT		false
 
 #endif /*__MCUCONF_H__*/

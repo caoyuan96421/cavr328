@@ -7,14 +7,6 @@
 #define BAUD 9600
 #define DIVIDE ((((uint32_t)F_CPU) >> 4) / BAUD - 1)
 
-
-FUSEMEM __fuse_t fusedata = {
-	0xFF,
-	0xD8,		// BOOTRST = 0 (enabled)
-	0xFF
-}; 
-
-/*
 void usart0_init(){
 	UBRR0L = DIVIDE & 0xFF;
 	UBRR0H = DIVIDE >> 8;
@@ -50,26 +42,27 @@ void usart0_write_hex_word(uint16_t data){
 	}
 	buf[4]='\0';
 	usart0_write(buf);
-}*/
+}
+
+uint8_t self_program = 1;
 
 int main(){
-//	usart0_init();
+	uint16_t counter=0;
 	PORTD = 0x08;
 	DDRB |= 0x01; /*Enable LED*/
 	_delay_ms(100);
-//	usart0_write_hex(PIND);
-//	usart0_write("\r\n");
 	if((PIND & 0x08) != 0){
 		PORTD = 0x00;
-//		usart0_write("Enter app\r\n");
 		ledOn();
-		_delay_ms(1000);
+		_delay_ms(100);
 		ledOff();
 		DDRB &= ~0x01;
 		asm volatile("jmp 0x0000\n\t");
 	}
-//	usart0_write("Enter bootloader\r\n");
-	while((PIND & 0x08) != 0);
+	while((PIND & 0x08) == 0){
+		_delay_ms(1);
+		counter++;
+	}
 	PORTD = 0;
 	uint8_t i=5;
 	while(i--){
@@ -78,8 +71,20 @@ int main(){
 		ledOff();
 		_delay_ms(100);
 	}
-
+	_delay_ms(200);
+	if(counter > 1500){
+		/*We're in External Programming mode!*/
+		ledOn();
+		self_program = 0;
+	}
+	else{
+		/*Self-programming mode*/
+		ledOff();
+		self_program = 1;
+	}
+	_delay_ms(200);
 	usbInit();
+	usart0_init();
 
 	MCUCR = (1<<IVCE);	/*Move vector table to the Bootloader region.*/
 	MCUCR = (1<<IVSEL);	/*Move vector table to the Bootloader region.*/
@@ -87,9 +92,9 @@ int main(){
 	usbDeviceDisconnect();
 	_delay_ms(100);
 	usbDeviceConnect();
-	//usart0_write("\r\nBootloader\r\n");
 	sei();
 	
+	usart0_write("\r\nBootloader\r\n");
 	while(1){
 		usbPoll();
 	}

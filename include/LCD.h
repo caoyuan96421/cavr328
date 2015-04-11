@@ -28,6 +28,8 @@
 
 #define lcdSetCursor(on, blink) lcdSendCommand(0x0C | (on ? 0x02 : 0) | (blink ? 0x01:0))
 
+#define lcdSetPosition(row, col) lcdSendCommand(0x80 | (row ? 0x40 : 0) | col);
+
 /*dir=1: shift right. dir=0: shift left*/
 #define lcdShift(dir)			lcdSendCommand(0x10 | (dir ? 0x0C : 0x08))
 #define lcdShiftCursor(dir)		lcdSendCommand(0x10 | (dir ? 0x04 : 0x00))

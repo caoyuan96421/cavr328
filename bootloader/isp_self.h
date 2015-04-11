@@ -17,19 +17,19 @@ void ispProcessCommand(uint8_t command[], uint8_t reply[]);
 uint8_t ispEnterProgrammingMode();
 
 /* read byte from eeprom at given address */
-void ispReadEEPROM(unsigned int address, uint8_t len, uint8_t buffer[]);
+void ispReadEEPROM(uint16_t address, uint8_t len, uint8_t buffer[]);
 
 /* write byte to flash at given address */
-void ispWriteFlash(unsigned long address, uint8_t len, uint8_t buffer[]);
+void ispWriteFlash(uint16_t address, uint8_t len, uint8_t buffer[]);
 
 /* Force write page buffer to flash */
-void ispFlushPage(unsigned long address);
+void ispFlushPage(uint16_t address);
 
 /* read byte from flash at given address */
 void ispReadFlash(uint16_t address, uint8_t len, uint8_t buffer[]);
 
 /* write byte to eeprom at given address */
-void ispWriteEEPROM(unsigned int address, uint8_t len, uint8_t buffer[]);
+void ispWriteEEPROM(uint16_t address, uint8_t len, uint8_t buffer[]);
 
 
 #endif /*__ISP_SELF_H__*/

@@ -32,12 +32,10 @@ void ispProcessCommand(uint8_t command[], uint8_t reply[]){
 		case 0xAC:
 			switch(command[1]){
 				case 0x80:
-					ledOn();
 					for(i=0;i<RWW_MAX_PAGE;i++){
 						boot_page_erase_safe(i << PAGE_BITS);
 					}
 					boot_rww_enable_safe();
-					ledOff();
 					break;
 				default:
 					break;
@@ -54,53 +52,52 @@ uint8_t ispEnterProgrammingMode(){
 	return 0;
 }
 
+static void memcpy_fill(uint8_t len, uint16_t buffer[]){
+	asm volatile(
+		"rjmp .memcpy_loop_start\n"
+		".memcpy_loop:\n\t"
+		"st X+,%0\n"
+		".memcpy_loop_start:\n\t"
+		"subi %1, 1\n\t"
+		"brcc .memcpy_loop\n\t"
+		: : "r" (FLASH_ERASED_BYTE), "r" (len), "x" (buffer)
+	);
+}
+
+static void memcpy_prog(uint16_t address, uint8_t len, uint8_t buffer[]){
+	asm volatile(
+		"rjmp .memcpy_P_loop_start\n"
+		".memcpy_P_loop:\n\t"
+		"lpm __tmp_reg__, Z+\n\t"
+		"st X+,__tmp_reg__\n"
+		".memcpy_P_loop_start:\n\t"
+		"subi %1, 1\n\t"
+		"brcc .memcpy_P_loop\n\t"
+	: : "z" ((uint16_t)address), "r" (len), "x" (buffer)
+	);//Don't know why memcpy_P doesn't work. so i just copied its assembly
+}
 
 void ispReadFlash(uint16_t address, uint8_t len, uint8_t buffer[]){
-	//boot_rww_enable_safe();
-	//usart0_write_hex(len);
-	//usart0_write('\r\n');
-	//memcpy_P(buffer, (PROGMEM void *)address, buffer);
-	/*uint16_t i;
-	for(i=0;i<len;i++){
-		buffer[i] = pgm_read_byte(address + i);
-	}*/
+	uint8_t i;
 	if(address >= RWW_MAX_PAGE * PAGE_SIZE){
-		asm volatile(
-			"rjmp .memcpy_loop_start\n"
-		".memcpy_loop:\n\t"
-			"st X+,%0\n"
-		".memcpy_loop_start:\n\t"
-			"subi %1, 1\n\t"
-			"brcc .memcpy_loop\n\t"
-			: : "r" (FLASH_ERASED_BYTE), "r" (len), "x" (buffer)
-		);
+		memcpy_fill(len, buffer);
+		//for(i=0;i<len;i++)
+		//	buffer[i] = FLASH_ERASED_BYTE;
 	}
 	else{
-		ledOn();
-		asm volatile(
-			"rjmp .memcpy_P_loop_start\n"
-		".memcpy_P_loop:\n\t"
-			"lpm __tmp_reg__, Z+\n\t"
-			"st X+,__tmp_reg__\n"
-		".memcpy_P_loop_start:\n\t"
-			"subi %1, 1\n\t"
-			"brcc .memcpy_P_loop\n\t"
-		: : "z" (address), "r" (len), "x" (buffer)
-		);/*Don't know why memcpy_P doesn't work. so i just copied its assembly*/
-		ledOff();
+		memcpy_prog(address, len, buffer);
+		//for(i=0;i<len;i++)
+		//	buffer[i] = pgm_read_byte(address + i);
 	}
 }
 
-void ispWriteFlash(unsigned long address, uint8_t len, uint8_t buffer[]){
+void ispWriteFlash(uint16_t address, uint8_t len, uint8_t buffer[]){
 	uint8_t i;
-	ledOn();
 	for(i=0;i<len;i+=2){
 		cli();
 		boot_page_fill(address+i,*((uint16_t *)(buffer+i)));
 		sei();
 		boot_spm_busy_wait();
-//		usart0_write_hex_word(address+i);
-//		usart0_write("\r\n");
 		if(((address+i+2) & (PAGE_SIZE-1))== 0){ /* Page Boundary*/
 			cli();
 			boot_page_write(address+i+1); /* Write last page */
@@ -110,16 +107,11 @@ void ispWriteFlash(unsigned long address, uint8_t len, uint8_t buffer[]){
 			boot_rww_enable();
 			sei();
 			boot_spm_busy();
-			
-//			usart0_write("Write ");
-//			usart0_write_hex_word(address+i+1);
-//			usart0_write("\r\n");
 		}
 	}
-	ledOff();
 }
 
-void ispFlushPage(unsigned long address){
+void ispFlushPage(uint16_t address){
 	cli();
 	boot_page_write(address); /* Write page */
 	sei();
@@ -128,17 +120,14 @@ void ispFlushPage(unsigned long address){
 	boot_rww_enable();
 	sei();
 	boot_spm_busy_wait();
-//	usart0_write("Write ");
-//	usart0_write_hex_word(address);
-//	usart0_write("\r\n");
 }
 
-void ispWriteEEPROM(unsigned int address, uint8_t len, uint8_t buffer[]){
+void ispWriteEEPROM(uint16_t address, uint8_t len, uint8_t buffer[]){
 	eeprom_busy_wait();
 	eeprom_write_block(buffer, (void *) address, len);
 }
 
-void ispReadEEPROM(unsigned int address, uint8_t len, uint8_t buffer[]){
+void ispReadEEPROM(uint16_t address, uint8_t len, uint8_t buffer[]){
 	eeprom_busy_wait();
 	eeprom_read_block(buffer, (void *) address, len);
 }

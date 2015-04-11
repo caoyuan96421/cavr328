@@ -1,5 +1,5 @@
 # Name: Makefile
-# Project: hid-m
+# Project: cavr328
 # Author: Yuan Cao
 # Creation Date: 2014-09-30
 # Tabsize: 4
@@ -12,12 +12,12 @@ DEVICE  = atmega328
 F_CPU   = 16000000L
 OBJECT_$(PROJECT) = OBJECTS
 
-OBJECT_avr-bootloader = OBJ-BOOTLOADER
+OBJECT_$(PROJECT)-bootloader = OBJ-BOOTLOADER
 
 PROGRAMMER = avrispmk2
 INTERFACE = ISP
 PROGFREQ = 1mhz
-PROGFREQ = 2mhz
+# PROGFREQ = 2mhz
 PROG_FUSE = 1
 
 ifeq ($(PROG_FUSE),1)
@@ -32,7 +32,7 @@ INC = -I../usbdrv
 DEF = 
 LIB = -Wl,-lm
 LDFLAGS = -Wl,-Map,$(basename $@).map -Wl,--gc-sections
-GCC_OPTS = -Wall -Os -std=gnu99 -g2
+GCC_OPTS = -Wall -Os -std=gnu99 -g1
 
 
 # Include source files in other directories
@@ -55,8 +55,8 @@ all: INC += -I../src -I../include
 all: $(OUTPUT)/$(PROJECT).elf $(OUTPUT)/$(PROJECT).hex $(OUTPUT)/$(PROJECT).dump $(addprefix $(OUTPUT)/,$(OBJECTS))
 	@echo Done.
 
-bootloader: LDFLAGS += -Wl,--section-start,.text=0x7000
-bootloader: INC += -I../bootloader
+bootloader: LDFLAGS += -Wl,--section-start,.text=$(TEXT)
+bootloader: INC += -I../bootloader -I../include
 bootloader: DEF += -DBOOTLOADER
 bootloader: $(OUTPUT)/$(PROJECT)-bootloader.elf $(OUTPUT)/$(PROJECT)-bootloader.hex $(OUTPUT)/$(PROJECT)-bootloader.dump $(addprefix $(OUTPUT)/,$(OBJ-BOOTLOADER))
 	
